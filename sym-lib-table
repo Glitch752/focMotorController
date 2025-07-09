@@ -4,4 +4,5 @@
   (lib (name "WJ128V-5.0-3P")(type "KiCad")(uri "${KIPRJMOD}/symbols/WJ128V-5.0-3P.kicad_sym")(options "")(descr ""))
   (lib (name "WJ128V-5.0-2P")(type "KiCad")(uri "${KIPRJMOD}/symbols/WJ128V-5.0-2P.kicad_sym")(options "")(descr ""))
   (lib (name "TC4420EPA")(type "KiCad")(uri "${KIPRJMOD}/symbols/TC4420EPA.kicad_sym")(options "")(descr ""))
+  (lib (name "ResettableFuses")(type "KiCad")(uri "${KIPRJMOD}/symbols/ResettableFuses.kicad_sym")(options "")(descr ""))
 )
