@@ -1,0 +1,25 @@
+Comment,Designator,Footprint,LCSC,Quantity
+SMAJ15A - TVS diode for voltage spike protection,D1,D_SMA,C113958,1
+Resettable polyfuse for overcurrent protection,F1,A16-1000,C135398,1
+JST-PH encoder connection,J2,JST_PH_S6B-PH-K_1x06_P2.00mm_Horizontal,C157920,1
+2k,R2,R_1206_3216Metric,C17944,1
+Amplifier A,"U12,U13,U14",SOIC-8_3.9x4.9mm_P1.27mm,C2060769,3
+Bootstrap charger,"D7,D8,D9",D_SOD-123,C2102,3
+74LVC2T45DC,"U1,U2",VSSOP-8_2.3x2mm_P0.5mm,C22672,2
+620ohm,R3,R_1206_3216Metric,C25391,1
+Pulldown 47k,"R11,R13,R7,R8",R_1206_3216Metric,C25833,4
+3.3k,R1,R_1206_3216Metric,C26041,1
+100ohm,"R4,R5,R6",R_1206_3216Metric,C2907422,3
+Decoupling B 1uF/25V,"C6,C7,C8",CP_Radial_D5.0mm_P2.00mm,C2927584,3
+Gate BL 19.6ohm,"R10,R12,R19,R20,R22,R9",R_1206_3216Metric,C2933621,6
+IR2104 Gate Driver B,"U10,U11,U9",IR2104SPBF,C2960,3
+Status LED 1 (green),"D4,D5,D6",LED_1206_3216Metric,C3646937,3
+Power LED (red),D3,LED_1206_3216Metric,C3646938,1
+0.1uF ceramic,C2,C_Disc_D5.0mm_W2.5mm_P5.00mm,C400087,1
+470uF electrolytic,C1,CP_Radial_D8.0mm_P3.50mm,C47888,1
+Bootstrap A 0.1uF/25v,"C3,C4,C5",C_Disc_D5.0mm_W2.5mm_P5.00mm,C5375966,3
+Shunt A 6uohm,"R14,R15,R16",R_2512_6332Metric,C728340,3
+MOSFET A low,"U3,U4,U5,U6,U7,U8",STP55NF06L,C77582,6
+MBR1045G,D2,TO-220-2_Vertical,C79734,1
+Power input,P2,WJ128V-5.0-2P,C8269,1
+WJ128V-5.0-3P,P1,WJ128V-5.0-3P,C8270,1

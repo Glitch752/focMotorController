@@ -105,8 +105,7 @@ def main():
         vel_text = dpg.add_text(default_value="Velocity: 0.00 rad/s")
 
     def update_gui(delta: float):
-        
-        delta = min(delta, 100)  # Cap delta to avoid too large jumps
+        delta = min(delta, 100) # Cap delta to avoid too large jumps
         while delta > dt:
             delta -= dt
             

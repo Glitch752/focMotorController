@@ -1,0 +1,55 @@
+Designator,Val,Package,Mid X,Mid Y,Rotation,Layer
+C1,470uF electrolytic,CP_Radial_D8.0mm_P3.50mm,140.0,-84.25,90.0,top
+C2,0.1uF ceramic,C_Disc_D5.0mm_W2.5mm_P5.00mm,133.5,-84.5,-90.0,top
+C3,Bootstrap A 0.1uF/25v,C_Disc_D5.0mm_W2.5mm_P5.00mm,115.2041,-63.0,-90.0,top
+C4,Bootstrap B 0.1uF/25v,C_Disc_D5.0mm_W2.5mm_P5.00mm,128.2041,-63.0,-90.0,top
+C5,Bootstrap C 0.1uF/25v,C_Disc_D5.0mm_W2.5mm_P5.00mm,141.0,-63.0,-90.0,top
+C6,Decoupling B 1uF/25V,CP_Radial_D5.0mm_P2.00mm,129.5,-42.955113,90.0,top
+C7,Decoupling A 1uF/25V,CP_Radial_D5.0mm_P2.00mm,142.5,-42.955113,90.0,top
+C8,Decoupling C 1uF/25V,CP_Radial_D5.0mm_P2.00mm,116.5,-42.955113,90.0,top
+D1,SMAJ15A - TVS diode for voltage spike protection,D_SMA,101.0,-53.0,-90.0,top
+D2,MBR1045G,TO-220-2_Vertical,100.55,-62.5,-90.0,top
+D3,Power LED (red),LED_1206_3216Metric,92.5,-40.485022,90.0,top
+D4,Status LED 1 (green),LED_1206_3216Metric,77.5,-40.485022,90.0,top
+D5,Status LED 2 (green),LED_1206_3216Metric,82.5,-40.485022,90.0,top
+D6,Status LED 3 (green),LED_1206_3216Metric,87.5,-40.485022,90.0,top
+D7,Bootstrap charger,D_SOD-123,116.5,-48.5,90.0,top
+D8,Bootstrap charger,D_SOD-123,129.5,-48.5,90.0,top
+D9,Bootstrap charger,D_SOD-123,142.5,-48.5,90.0,top
+F1,Resettable polyfuse for overcurrent protection,A16-1000,96.0,-58.0,-90.0,top
+J2,JST-PH encoder connection,JST_PH_S6B-PH-K_1x06_P2.00mm_Horizontal,101.0,-82.5,0.0,top
+P1,WJ128V-5.0-3P,WJ128V-5.0-3P,123.372,-83.635,0.0,top
+P2,Power input,WJ128V-5.0-2P,99.5,-43.5,180.0,top
+R1,3.3k,R_1206_3216Metric,106.0,-77.5,90.0,top
+R10,Gate BL 19.6ohm,R_1206_3216Metric,119.0,-53.135,-90.0,top
+R11,Pulldown 47k,R_1206_3216Metric,136.5,-39.5,180.0,top
+R12,Gate CH 19.6ohm,R_1206_3216Metric,134.5,-48.5,-90.0,top
+R13,Pulldown 47k,R_1206_3216Metric,96.5,-68.5,0.0,top
+R14,Shunt A 6uohm,R_2512_6332Metric,110.6461,-72.635,-90.0,top
+R15,Shunt B 6uohm,R_2512_6332Metric,123.372,-72.635,-90.0,top
+R16,Shunt C 6uohm,R_2512_6332Metric,136.2041,-72.635,-90.0,top
+R19,Gate AL 19.6ohm,R_1206_3216Metric,105.7041,-53.135,-90.0,top
+R2,2k,R_1206_3216Metric,97.0,-71.5,0.0,top
+R20,Gate CL 19.6ohm,R_1206_3216Metric,132.0,-53.135,-90.0,top
+R22,Gate AH 19.6ohm,R_1206_3216Metric,108.5,-48.5,-90.0,top
+R3,620ohm,R_1206_3216Metric,90.0,-40.485022,90.0,top
+R4,100ohm,R_1206_3216Metric,75.020882,-40.5,90.0,top
+R5,100ohm,R_1206_3216Metric,80.0,-40.485022,90.0,top
+R6,100ohm,R_1206_3216Metric,85.0,-40.485022,90.0,top
+R7,Pulldown 47k,R_1206_3216Metric,110.0,-39.5,180.0,top
+R8,Pulldown 47k,R_1206_3216Metric,123.0,-39.5,180.0,top
+R9,Gate BH 19.6ohm,R_1206_3216Metric,121.5,-48.5,-90.0,top
+U1,74LVC2T45DC,VSSOP-8_2.3x2mm_P0.5mm,102.5,-77.5,-90.0,top
+U10,IR2104 Gate Driver B,IR2104SPBF,123.0,-43.5,180.0,top
+U11,IR2104 Gate Driver C,IR2104SPBF,136.0,-43.5,180.0,top
+U12,Amplifier A,SOIC-8_3.9x4.9mm_P1.27mm,115.7041,-72.5,90.0,top
+U13,Amplifier B,SOIC-8_3.9x4.9mm_P1.27mm,128.2041,-72.5,90.0,top
+U14,Amplifier C,SOIC-8_3.9x4.9mm_P1.27mm,141.2041,-72.5,90.0,top
+U2,74LVC2T45DC,VSSOP-8_2.3x2mm_P0.5mm,98.25,-77.5,-90.0,top
+U3,MOSFET A low,STP55NF06L,107.7041,-61.0475,90.0,top
+U4,MOSFET B low,STP55NF06L,120.43,-61.0475,90.0,top
+U5,MOSFET C low,STP55NF06L,133.2621,-61.0475,90.0,top
+U6,MOSFET A high,STP55NF06L,112.0,-52.46,-90.0,top
+U7,MOSFET B high,STP55NF06L,125.0,-52.46,-90.0,top
+U8,MOSFET C high,STP55NF06L,138.0,-52.5875,-90.0,top
+U9,IR2104 Gate Driver A,IR2104SPBF,110.0,-43.5,180.0,top
