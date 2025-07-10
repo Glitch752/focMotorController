@@ -23,4 +23,4 @@ I iterated on the design to make the PCB much more compact and clean. I'm not ye
 ## Improve documentation
 Time taken: ~30 minutes
 
-I improved the documentation of the project.
+I improved the [documentation of the project](https://github.com/Glitch752/focMotorController/blob/472c54bfc41076d94987bcc05ba8eb1525c3219e/README.md).

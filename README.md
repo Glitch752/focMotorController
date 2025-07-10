@@ -4,6 +4,8 @@ A 12v brushless DC motor controller capable of [field-oriented control](https://
 
 I wanted to learn how field-oriented control systems (and brushless motor controllers in general) work, so I made a PCB from scratch!
 
+<img src="assets/board_rtx.png" width="1000px"></img>
+
 ## Design goals
 - Allow 10-amp continuous operation
 - Run field-oriented control
@@ -50,6 +52,14 @@ TODO: BOM entries for a few additional tiny components like resistors
 
 Total part cost for 1 board: $13.54 without microcontroller / $32.64 with microcontroller  
 Note that, if you're doing assembly through something like JLCPCB, you'll need to make 5. Therefore, parts actually cost $67.70. If you don't need 5 boards, you can avoid assembly for the MOSFETs and order them yourself. They're one of the easiest components to solder on the board.
+
+## Software
+Currently, there's a testing piece of software written in Python to run on a local system and simulate the motor controller. Obviously, Python won't be fast enough for high-speed closed-loop control on the motor controller, so I'll move to C++ once I have the ability
+to test more easily. 
+
+## Future investigation (once I actually have a PCB lol)
+- Does it actually work?
+- Do we need a heatsink? We should be dissipating an average of ~0.32W per MOSFET at peak load, and 2 watts spread over 6 devices is a very minimal amount of heat. Maybe if we drive it harder, but the rest of the circuit would probably break before the MOSFETs...
 
 ## Resources
 - [Current Sensing Techniques in Motor Control Applications](https://www.nxp.com/docs/en/application-note/AN14164.pdf)
