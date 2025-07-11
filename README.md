@@ -58,7 +58,6 @@ Of course, many of these can be sourced cheaper elsewhere and soldered manually.
 |1206W4F4702T5E|47kohm pulldown resistors|4|[C25833](https://jlcpcb.com/partdetail/26576-1206W4F4702T5E/C25833)|$0.02|
 |FRC1206F19R6TS|19.6ohm gate resistors|6|[C2933621](https://jlcpcb.com/partdetail/FOJAN-FRC1206F19R6TS/C2933621)|$0.02|
 
-
 Total part cost for 1 board:
 - $8.02 without microcontroller or MOSFETs
 - $13.93 without microcontroller
@@ -67,8 +66,9 @@ Total part cost for 1 board:
 Note that, if you're doing assembly through something like JLCPCB, you'll need to make 5. If you don't need 5 boards, you can avoid assembly for the MOSFETs and order them yourself. They're one of the easiest components to solder on the board.
 
 ## Software
-Currently, there's a testing piece of software written in Python to run on a local system and simulate the motor controller. Obviously, Python won't be fast enough for high-speed closed-loop control on the motor controller, so I'll move to C++ once I have the ability
-to test more easily.
+Currently, there's a testing piece of software written in Python to run on a local system and simulate the motor controller.
+Obviously, Python won't be fast enough for high-speed closed-loop control on the motor controller,
+so I'll move to C++ once I have the ability to test more easily.
 
 ## Hackatime
 Project name: `focMotorController`

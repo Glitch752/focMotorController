@@ -83,7 +83,9 @@ def main():
     dpg.create_viewport()
     dpg.setup_dearpygui()
 
-    max_values = 1000
+    SHOW_LATEST_GRAPH = True
+
+    max_values = 500
     times = []
     angles = []
     phase_a_voltages = []
@@ -92,11 +94,14 @@ def main():
     
     with dpg.window(label="Motor Controller"):
         angle_plot = dpg.add_plot(label="Rotor Angle", height=400, width=1000)
-        dpg.add_plot_axis(dpg.mvXAxis, label="Time (s)", parent=angle_plot)
+        x_axis = dpg.add_plot_axis(dpg.mvXAxis, label="Time (s)", parent=angle_plot)
         y_axis = dpg.add_plot_axis(dpg.mvYAxis, label="Angle (rad)", parent=angle_plot)
         
         angle_series = dpg.add_line_series([], [], label="Angle", parent=y_axis)
         # dpg.set_axis_limits(y_axis, 0, 2 * math.pi)
+        
+        if SHOW_LATEST_GRAPH:
+            dpg.set_axis_limits(x_axis, 0, max_values * dt)
         
         phase_a_series = dpg.add_line_series([], [], label="Phase A Voltage", parent=y_axis)
         phase_b_series = dpg.add_line_series([], [], label="Phase B Voltage", parent=y_axis)
@@ -104,20 +109,36 @@ def main():
         
         vel_text = dpg.add_text(default_value="Velocity: 0.00 rad/s")
 
+    elapsed = 0
     def update_gui(delta: float):
+        nonlocal elapsed
+        
         delta = min(delta, 100) # Cap delta to avoid too large jumps
         while delta > dt:
             delta -= dt
             
             ctrl.step(dt)
             
-            t = len(times) * dt
-            times.append(t)
-            angles.append(io.get_encoder_position())
+            elapsed += dt
             
+            if SHOW_LATEST_GRAPH:
+                if len(times) < max_values:
+                    times.append(len(times) * dt)
+            else:
+                times.append(elapsed)
+            
+            angles.append(io.get_encoder_position())
             phase_a_voltages.append(ctrl.last_output_phase_a)
             phase_b_voltages.append(ctrl.last_output_phase_b)
             phase_c_voltages.append(ctrl.last_output_phase_c)
+            
+            if len(times) > max_values:
+                times.pop(0)
+            if len(angles) > max_values:
+                angles.pop(0)
+                phase_a_voltages.pop(0)
+                phase_b_voltages.pop(0)
+                phase_c_voltages.pop(0)
         
         dpg.set_value(angle_series, [times, angles])
         dpg.set_value(phase_a_series, [times, phase_a_voltages])
