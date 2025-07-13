@@ -12,12 +12,29 @@ class FOCController:
     angle: float # Radians, from encoder
     vel: float # Rad/s, estimated
     
-    kp_id: float # Proportional gain for d-axis current
-    ki_id: float # Integral gain for d-axis current
-    kp_iq: float # Proportional gain for q-axis current
-    ki_iq: float # Integral gain for q-axis current
-    id_int: float # Integral term for d-axis current
-    iq_int: float # Integral term for q-axis current
+    class IDController:
+        """
+        PI controller for d-axis and q-axis currents.
+        """
+        kp: float
+        ki: float
+        int: float
+        
+        def __init__(self, kp: float, ki: float):
+            self.kp = kp
+            self.ki = ki
+            self.int = 0
+
+        def reset(self):
+            self.int = 0.0
+
+        def compute(self, error: float, dt: float) -> float:
+            self.int += error * self.ki * dt
+            return self.kp * error + self.int
+
+    # D-axis and Q-axis current controllers
+    id_controller: "FOCController.IDController"
+    iq_controller: "FOCController.IDController"
     
     target_iq: float # Target q-axis current (torque command)
     
@@ -30,13 +47,8 @@ class FOCController:
         self.angle = 0.0
         self.vel = 0.0
         
-        # control gains
-        self.kp_id = 1.0
-        self.ki_id = 10.0
-        self.kp_iq = 1.0
-        self.ki_iq = 10.0
-        self.id_int = 0.0
-        self.iq_int = 0.0
+        self.id_controller = self.IDController(kp=0.1, ki=0.01)
+        self.iq_controller = self.IDController(kp=0.1, ki=0.01)
         
         self.target_iq = 1.0
         
@@ -47,29 +59,31 @@ class FOCController:
         self.vel = delta / dt
         self.angle = pos
         
-        # Clarke and Park transforms but only with one phase
-        id_meas = self.io.motor.current * math.cos(self.angle)
-        iq_meas = self.io.motor.current * math.sin(self.angle)
+        # Park-Clarke transformation
+        # Okay, this is DEFINITELY not right but I'll eventually figure it out (maybe)
+        i_a, i_b, i_c = self.io.motor.get_simulated_phase_currents()
+        i_alpha = (i_a - i_b) / math.sqrt(3)
+        i_beta = (i_a + 2 * i_b) / math.sqrt(3)
+        i_d = i_alpha * math.cos(self.angle) + i_beta * math.sin(self.angle)
+        i_q = -i_alpha * math.sin(self.angle) + i_beta * math.cos(self.angle)
         
-        # PI current controllers
-        err_id = -id_meas
-        err_iq = self.target_iq - iq_meas
+        # individual axis currents
+        i_d_target = 0.0  # d-axis current target (usually 0 for BLDC)
+        i_q_target = self.target_iq  # q-axis current target (torque command)
         
-        self.id_int += err_id * self.ki_id * dt
-        self.iq_int += err_iq * self.ki_iq * dt
-        
-        u_id = self.kp_id * err_id + self.id_int
-        u_iq = self.kp_iq * err_iq + self.iq_int
+        u_id = self.id_controller.compute(i_d_target - i_d, dt)
+        u_iq = self.iq_controller.compute(i_q_target - i_q, dt)
         
         # Inverse Park-Clarke to get phase voltage
-        u_alpha =  u_id * math.cos(self.angle) - u_iq * math.sin(self.angle)
-        phase_v = u_alpha # Simplified single-phase representation; TODO: expand to three phases
-        
-        self.last_output_phase_a = phase_v
-        self.last_output_phase_b = phase_v
-        self.last_output_phase_c = phase_v
-        
-        self.io.update(dt, phase_v)
+        phase_a = 2 / 3 * (u_id * math.cos(self.angle) + u_iq * math.sin(self.angle))
+        phase_b = 2 / 3 * (-u_id * 0.5 + u_iq * math.sqrt(3) / 2)
+        phase_c = 2 / 3 * (-u_id * 0.5 - u_iq * math.sqrt(3) / 2)
+
+        self.last_output_phase_a = phase_a
+        self.last_output_phase_b = phase_b
+        self.last_output_phase_c = phase_c
+
+        self.io.update(dt, phase_a, phase_b, phase_c)
 
 def main():
     print("--- FOC motor controller simulation ---")
