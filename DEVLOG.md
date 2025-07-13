@@ -41,3 +41,8 @@ I started preparing the PCB to be manufactured with the excellent [kicad-jlcpcb-
 
 ## Finish JLCPCB part assignments and create/check exhaustive BOM
 Time taken: ~1 hour
+
+## Start FOC writeup
+Time taken: ~2 hours
+
+I created an initial writeup of my understanding of field oriented control in the readme.
