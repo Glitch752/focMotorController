@@ -5,12 +5,9 @@ class MotorSimulation:
     velocity: float # Velocity in rad/s
 
     # Per-phase currents
-    ia: float
-    ib: float
-    ic: float
-
-    # Current limit in amps; not physically based or anything
-    current_limit: float
+    iu: float
+    iv: float
+    iw: float
 
     # Inertia in kg*m^2
     inertia: float
@@ -25,10 +22,9 @@ class MotorSimulation:
     def __init__(self):
         self.position = 0.0
         self.velocity = 0.0
-        self.ia = 0.0
-        self.ib = 0.0
-        self.ic = 0.0
-        self.current_limit = 10.0
+        self.iu = 0.0
+        self.iv = 0.0
+        self.iw = 0.0
 
         self.inertia = 1e-4
         self.viscous = 1e-3
@@ -38,44 +34,39 @@ class MotorSimulation:
         self.Kt = 0.02
         self.Ke = 0.02
 
-    def update(self, dt: float, phase_a: float, phase_b: float, phase_c: float):
-        # Simulate per-phase RL + back-EMF
+    def update(self, dt: float, phase_u: float, phase_v: float, phase_w: float):
+        vbus = 12.0  # TODO: Simulate voltage drop, maybe?
         
-        # Electrical angle (assuming 1 pole pair)
-        theta_e = self.position
+        vu = (phase_u - 0.5) * vbus
+        vv = (phase_v - 0.5) * vbus
+        vw = (phase_w - 0.5) * vbus
 
-        # Back-EMF for each phase (sinusoidal, 120 deg apart)
-        emf_a = self.Ke * self.velocity * math.sin(theta_e)
-        emf_b = self.Ke * self.velocity * math.sin(theta_e - 2 * math.pi / 3)
-        emf_c = self.Ke * self.velocity * math.sin(theta_e + 2 * math.pi / 3)
+        # Calculate back-EMF for each phase
+        theta = self.position
+        emf_u = self.Ke * self.velocity * math.sin(theta)
+        emf_v = self.Ke * self.velocity * math.sin(theta - 2 * math.pi / 3)
+        emf_w = self.Ke * self.velocity * math.sin(theta + 2 * math.pi / 3)
 
-        # di/dt for each phase
-        dia = (phase_a - self.R * self.ia - emf_a) / self.L
-        dib = (phase_b - self.R * self.ib - emf_b) / self.L
-        dic = (phase_c - self.R * self.ic - emf_c) / self.L
+        # Update phase currents using simple RL circuit model
+        diu = (vu - emf_u - self.R * self.iu) / self.L
+        div = (vv - emf_v - self.R * self.iv) / self.L
+        diw = (vw - emf_w - self.R * self.iw) / self.L
+        
+        self.iu += diu * dt
+        self.iv += div * dt
+        self.iw += diw * dt
 
-        self.ia += dia * dt
-        self.ib += dib * dt
-        self.ic += dic * dt
-
-        # Enforce current limit per phase... not accurate at all, but meh.
-        self.ia = max(-self.current_limit, min(self.ia, self.current_limit))
-        self.ib = max(-self.current_limit, min(self.ib, self.current_limit))
-        self.ic = max(-self.current_limit, min(self.ic, self.current_limit))
-
-        # Total torque is the sum of phase torques
-        torque = (
-            self.Kt * (
-                self.ia * math.sin(theta_e) +
-                self.ib * math.sin(theta_e - 2 * math.pi / 3) +
-                self.ic * math.sin(theta_e + 2 * math.pi / 3)
-            )
+        torque = self.Kt * (
+            self.iu * math.sin(theta) +
+            self.iv * math.sin(theta - 2 * math.pi / 3) +
+            self.iw * math.sin(theta + 2 * math.pi / 3)
         )
 
-        # Friction torque
-        friction_torque = self.viscous * self.velocity + self.coulomb * math.copysign(1, self.velocity)
-        accel = (torque - friction_torque) / self.inertia
+        # Friction torques
+        torque_friction = self.viscous * self.velocity + math.copysign(self.coulomb, self.velocity)
+        net_torque = torque - torque_friction
 
+        accel = net_torque / self.inertia
         self.velocity += accel * dt
         self.position += self.velocity * dt
 
@@ -84,7 +75,7 @@ class MotorSimulation:
 
     def get_simulated_phase_currents(self):
         """Returns the simulated phase currents as a tuple (phase_a, phase_b, phase_c)."""
-        return (self.ia, self.ib, self.ic)
+        return (self.iu, self.iv, self.iw)
 
 
 # Simulates the IO for the actual motor controller using a mocked interface and simulated motor.
@@ -95,9 +86,9 @@ class SimIOInterface:
     def __init__(self):
         self.motor = MotorSimulation()
     
-    def update(self, dt: float, phase_a: float, phase_b: float, phase_c: float):
+    def update(self, dt: float, phase_u: float, phase_v: float, phase_w: float):
         """Update the motor simulation with the given phase inputs."""
-        self.motor.update(dt, phase_a, phase_b, phase_c)
+        self.motor.update(dt, phase_u, phase_v, phase_w)
     
     def get_encoder_position(self) -> float:
         """Get the current encoder position of the motor in radians."""

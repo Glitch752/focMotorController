@@ -68,54 +68,46 @@ Note that, if you're doing assembly through something like JLCPCB, you'll need t
 ## FOC writeup
 Here, I'll document my current knowledge of field oriented control for my own reference and to see what I need to look further into. Please note all this information may not be correct since BLDC controll is still a new subject to me.
 
-Field oriented control is a mechanism to control brushless DC motors that guarentees torque will always be applied directly perpendicular to the motor. It increases the efficiency, maximum speed, and power output of controlled motors. However, it's also relatively expensive to calculate and suffers from MOSFET switching losses because we must use PWM control to generate an effective sine wave.
+Field oriented control is a mechanism to control brushless DC motors that guarantees torque will always be applied directly perpendicular to the motor. It increases the efficiency, maximum speed, and power output of controlled motors. However, it's also relatively expensive to calculate and suffers from MOSFET switching losses because we must use PWM control to generate an effective sine wave.
 
-There are a few important acronyms, terms and conventions I'll define:
-- **FOC**: Field-oriented control.
-A method of controlling brushless motors that uses current-based feedback to apply torque directly perpendicular to the rotor.
-- **BLDC**: Brushless DC. Brushed motors have physical contacts that dictate when phases are activated,
-while brushless motors rely on electrical signals to control the phases.
-Brushless motors can be faster, more reliable, and more efficient, but this comes at the cost of complexity.
-- **Rotor**: The *rot*ating part of the motor containing permanent magnets. This is the part that spins.
-- **Stator**: The *stat*ionary part of the motor containing the windings. This is the part that generates the magnetic field.
-In a 3-phase motor, the stator has 3 sets of windings, each 120 degrees apart.
-- **Encoder**: A device that measures the position of the rotor relative to the stator.
-Accurate position measurement is crucial for FOC so we know where to apply torque.
+### Definitions and acronyms
+- **Motor**: A device that converts electrical energy into mechanical energy. Motors typically use moving permanent magnets and fixed electromagnets to generate a magnetic field that causes the rotor to spin.
+  - **Winding**: A coil of wire that generates a magnetic field when current flows through it.
+  - **Inductor**: Another name for a winding, typically used in the context of inductors that store energy in a magnetic field.
+  - **Phase**: A set of windings in a motor that is independently controlled. Brushless motors typically have three phases, which are often referred to as A, B, and C or U, V, and W.
+  - **Rotor**: The *rot*ating part of the motor containing permanent magnets. This is the part that spins.
+  - **Stator**: The *stat*ionary part of the motor containing the windings. This is the part that generates the magnetic field. In a 3-phase motor, the stator has 3 sets of windings, each 120 degrees apart.
+  - **BLDC**: Brushless DC. Brushed motors have physical contacts that dictate when phases are activated, while brushless motors rely on electrical signals to control the phases. Brushless motors can be faster, more reliable, and more efficient, but this comes at the cost of complexity.[<sup>1</sup>](#footnote-1)
+  - **PMSM**: Permanent Magnet Synchronous Motors. The uses of this term are somewhat murky and confused with BLDC, so I will refrain from using it to avoid confusion.[<sup>2</sup>](#footnote-2)
+- **FOC**: Field-oriented control, a method of controlling brushless motors that uses current-based feedback to apply torque directly perpendicular to the rotor.
+- **Inverter**: Components that convert DC power to AC power. In our case, the circuitry that converts the motor controller's input voltage to phase voltages.
+  - **MOSFET**: Metal-Oxide-Semiconductor Field-Effect Transistor; a particular type of transistor that can effectively act as a switch when appropriate signals are applied. 6 MOSFETs are used for BLDC motor control: one for ground and one for voltage of each phase.
+  - **Gate driver / FET driver**: A circuit that controls MOSFETs, providing the necessary voltage while decoupling the microcontroller from the relatively high current draw of switching MOSFETs. 
+- **Encoder**: A device that measures the position of the rotor relative to the stator. Accurate position measurement is crucial for FOC so we know where to apply torque.
   - **Hall effect sensor**: A type of sensor that detects magnetic fields.
-  - **Quadrature encoder**: A type of encoder that uses two signals to determine the position of the rotor.
-  It can detect both position and direction of rotation.
-  Quadrature encoders can use hall sensors, optical sensors, or other methods.
-    - **A/B channels**: Quadrature encoders have two primary outputs, A and B, which are 90 degrees out of phase.
-    This communicates both velocity and direction of rotation.
-    - **C channel / index**: Some quadrature encoders (including those we rely on) have a third channel, C,
-    which indicates a specific position of the rotor. This is used for homing the rotor to find its initial position.
+  - **Quadrature encoder**: A type of encoder that uses two signals to determine the position of the rotor. It can detect both position and direction of rotation. Quadrature encoders can use hall sensors, optical sensors, or other methods.
+    - **A/B channels**: Quadrature encoders have two primary outputs, A and B, which are 90 degrees out of phase. This communicates both velocity and direction of rotation.
+    - **C channel / index**: Some quadrature encoders (including those we rely on) have a third channel, C, which indicates a specific position of the rotor. This is used for homing the rotor to find its initial position.
 - **PWM**: Pulse-width modulation. A method of controlling the amount of power delivered by quicking switching something on and off.
-  - **Duty cycle**: The percentage of time that a signal is on compared to the total time.
-  For example, a 25% duty cycle means the signal is on for 25% of the time and off for 75% of the time.
-- **Inrunner/outrunner**: Two types of BLDC motors that differ in how the stator and rotor are arranged.
-  - **Inrunner**: The rotor is inside the stator, which typically contains large windings pointing inward.
-  Inrunner motors generally have a higher maximum speed and efficiency.
-  - **Outrunner**: The rotor is outside the stator, which typically contains smaller windings pointing outward.
-  In some cases, this means the rotor is the outer body of the motor.
-  In outrunner motors, the rotor is sometimes also called a can.
-  Outrunner motors generally have a higher torque output.
+  - **Duty cycle**: The percentage of time that a signal is on compared to the total time. For example, a 25% duty cycle means the signal is on for 25% of the time and off for 75% of the time.
+  - **SVM**: Space vector modulation. An algorithm for effectively creating AC waveforms through PWM signals. SVM is commonly used for BLDC motor control because it reduces noise and vibration compared to more naive approaches.
+- **Inrunner/outrunner**: Two types of brushless motors that differ in how the stator and rotor are arranged.
+  - **Inrunner**: The rotor is inside the stator, which typically contains large windings pointing inward. Inrunner motors generally have a higher maximum speed and efficiency.
+  - **Outrunner**: The rotor is outside the stator, which typically contains smaller windings pointing outward. In some cases, this means the rotor is the outer body of the motor. In outrunner motors, the rotor is sometimes also called a can. Outrunner motors generally have a higher torque output.
+- **Flux**: Shorthand for magnetic flux linkage. Magnetic flux linkage can be thought of as the "magnetic field strength" in the motor. For PMSM control, our reference flux is 0 (but we still need to control it to keep it there).
 - There are many coordinate systems used for BLDC control; see [figure 1](#figure-1-a-diagram-of-coordinate-systems-used-in-foc). Here are the most important ones and their common names:
   - **Stator X axis / alpha**: The "horizontal" (on a side profile) axis of the motor stator.
   - **Stator Y axis / beta**: The "vertical" (on a side profile) axis of the motor stator.
-  - **Winding U, V, and W axes**: The axes pointing outwards for the three phases of the motor,
-  120 degrees offset from each other. Axis U is typically aligned with the stator X axis.
-  - **Rotor quadrature axis / q**: The axis of the rotor that is perpendicular to the magnetic field.
-  This is the axis that generates torque, so it is the axis we wish to control.
-  - **Rotor direct axis / d**: The axis of the rotor that is parallel to the magnetic field.
-  We don't care about this axis for most applications, but it is used for some advanced control methods.
-- **Electromotive force / back EMF**: The voltage generated by the motor itself while spinning.
-  When BLDC motors spin, the rotor generates current in the stator that opposes the applied voltage.
-  Back EMF is sometimes used to determine the position and speed of BLDC motors in sensorless control,
-  but almost never for FOC because it's not precise enough.
-  Back EMF is linearly proportional to the rotational speed of the motor, so it's one of the forces that
-  limits BLDC motors' maximum speed.
-  Back-EMF can also be used to our advantage for "braking", which entails shorting the phases together to
-  make the motor resist rotation.
+  - **Winding U, V, and W axes**: The axes pointing outwards for the three phases of the motor, 120 degrees offset from each other. Axis U is typically aligned with the stator X axis.
+  - **Rotor direct axis / d**: The axis of the rotor that is parallel to the rotor's magnetic field that generates flux.
+  - **Rotor quadrature axis / q**: The axis of the rotor that is perpendicular to the rotor's magnetic field that generates torque.
+- **Electromotive force / back EMF**: The voltage generated by the motor itself while spinning.[<sup>3</sup>](#footnote-3)
+- Transformations are used in motor control to make manipulating the signals simpler.
+  - **Clarke transformation**: Also known as the alpha-beta transformation; converts the three-phase stator currents u, v, and w into stator axes alpha and beta.
+  - **Park transformation**: Also known as the direct-quadrature-zero transformation; converts stator-aligned components into rotor axes q and d with respect to the motor's rotating magnetic field.
+- **Proportional-integral (PI) controller**: A feedback-based control mechanism to regulate processes that require dynamic adjustment or can't be precisely modelled mathematically. PI controllers are used to regulate rotor axis (q and d) currents by controlling the maximum PWM duty cycle for each phase.[<sup>4</sup>](#footnote-4)
+
+### FOC process
 
 The broad overview of FOC control is as follows:
 1. Gather the measured position of the rotor using the encoder.
@@ -127,6 +119,9 @@ The broad overview of FOC control is as follows:
 7. Apply the calculated voltage to each phase using PWM.
 8. Repeat at a high frequency.
 
+![FOC diagram showing the above process](assets/FOCDiagram.png)
+From [this great presentation](https://www.ti.com/lit/ml/slyp711/slyp711.pdf).  
+
 There are a few important things to note:
 - We can't track the encoder position fast enough to respond accurately to the rotor position at high speeds,
   so we must perform latency compensation of some sort.
@@ -135,12 +130,27 @@ There are a few important things to note:
 - This doesn't account for current limiting, which is a whole separate topic that I honestly
   don't understand very well. Currently, I naively clamp the applied current to a maximum value.
 
+### Footnotes
+
+<h4 id="footnote-1"><sup>1</sup> "Brushless DC"</h4>
+Confusingly, "brushless DC motor control" is often used to refer to brushless motors that are controlled with DC voltage through a motor controller, even though the motor itself is an AC motor. This is because the motor controller generates a sine wave using PWM signals, which is then applied to the motor phases.
+
+<h4 id="footnote-2"><sup>2</sup> "Permanent Magnet Synchronous Motors. The uses of this term are somewhat murky and confused with BLDC [...]"</h4>
+Technically, brushless motors can also be switched reluctance motors or induction motors (also known as asynchronous motors). However, the majority of brushless DC motors are PMSM. Synchronous motors are a subset of brushless motors whose speed is independent of the load.
+
+<h4 id="footnote-3"><sup>3</sup> "Back EMF is the voltage generated by the motor itself while spinning"</h4>
+When brushless motors spin, the rotor generates current in the stator that opposes the applied voltage. Back EMF is linearly proportional to the rotational speed of the motor, so it's one of the forces that limits brushless motors' maximum speed.  
+Back EMF is sometimes used to determine the position and speed of brushless motors in sensorless control, but almost never for FOC because it's not precise enough. It can also be used to our advantage for "braking", which entails shorting the phases together to make the motor resist rotation.  
+  
+<h4 id="footnote-4"><sup>4</sup> "PI controllers are a feedback-based control mechanism [...]"</h4>
+PI controllers take the error between the current and desired state as an input and adjust the output based on the error. They have two components (hence the name): a proportional component that linearly adjusts the output based on the error, and an integral component that accumulates error over time. The two components are added to get the final output.  
+PI controllers are a subset of the more general PID controllers, which also include a derivative component that predicts future error based on the rate of change of the error. In a PI controller, the components serve different purposes; the proportional component provides immediate response to error, while the integral component helps eliminate steady-state error by adjusting the output based on accumulated error over time.  
 
 ### Figures
 #### Figure 1: A diagram of coordinate systems used in FOC
+<img src="assets/coordinate_systems.png" width="300"></img>
 Taken from [this great presentation](https://www.ti.com/lit/ml/slyp711/slyp711.pdf).  
 TODO: Make a cleaner image that isn't just a screenshot lol  
-<img src="assets/coordinate_systems.png" width="300"></img>
 
 ## Software
 Currently, there's a testing piece of software written in Python to run on a local system and simulate the motor controller.
@@ -158,26 +168,26 @@ Note that I initially had some issues with kicad-wakatime, so it didn't track ~8
 - Does it actually work?
 - Do we need a heatsink? We should be dissipating an average of ~0.32W per MOSFET at peak load, and 2 watts spread over 6 devices is a very minimal amount of heat. Maybe if we drive it harder, but the rest of the circuit would probably break before the MOSFETs...
 - There's an interesting new-ish algorithm seen primarily in acadamia called [Deadbeat Direct Torque and Flux Control](https://www.mdpi.com/1996-1073/15/9/3009); how difficult would it be to implement this?
+- Understand and determine the advantages of [discontinuous PWM](https://imperix.com/doc/implementation/discontinuous-pwm) signaling
 
 ## Resources
-- [Current Sensing Techniques in Motor Control Applications](https://www.nxp.com/docs/en/application-note/AN14164.pdf)
-- [Bootstrap Circuitry Selection for Half Bridge Configurations](https://www.ti.com/lit/an/slua887a/slua887a.pdf)
-- [Bypass Capacitor, Its Functions and Applications](https://www.elprocus.com/bypass-capacitor-its-functions-and-applications/)
+- [Current Sensing Techniques in Motor Control Applications - NXP](https://www.nxp.com/docs/en/application-note/AN14164.pdf)
+- [Bootstrap Circuitry Selection for Half Bridge Configurations - Texas Instruments](https://www.ti.com/lit/an/slua887a/slua887a.pdf)
+- [Bypass Capacitor, Its Functions and Applications - Elprocus](https://www.elprocus.com/bypass-capacitor-its-functions-and-applications/)
+- [How to Make Advanced BLDC Motor Controllers - Altium](https://resources.altium.com/p/build-advanced-brushless-motor-controller)
+- [Field-Oriented Control (FOC) for BLDC Motors: A Beginner’s Guide - Mechtex](https://mechtex.com/blog/field-oriented-control-foc-for-bldc-motors-a-beginners-guide)
+- [Discontinuous PWM (DPWM) - Imperix](https://imperix.com/doc/implementation/discontinuous-pwm)
+- [Proportional–integral–derivative controller](https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller)
+- [Space vector modulation - Wikipedia](https://en.wikipedia.org/wiki/Space_vector_modulation)
+- [Space Vector PWM Intro - Switchcraft](https://www.switchcraft.org/learning/2017/3/15/space-vector-pwm-intro) (has great animations)
+- [Protect Your BLDC Motor Drive with Cycle-by-cycle Current Limit Control - Texas Instruments](https://www.ti.com/lit/ta/ssztbp2/ssztbp2.pdf)
+- [PMSM Control with DSCs and MCUs - Microchip](https://www.microchip.com/en-us/solutions/technologies/motor-control-and-drive/motor-types/permanent-magnet-synchronous-motors)
+- [Vector control (motor) - Wikipedia](https://en.wikipedia.org/wiki/Vector_control_(motor))
+- [Demystifying BLDC motor commutation - Texas Instruments](https://www.ti.com/lit/ml/slyp711/slyp711.pdf)
+- [Alpha–beta transformation - Wikipedia](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_transformation)
+- [Direct-quadrature-zero transformation - Wikipedia](https://en.wikipedia.org/wiki/Direct-quadrature-zero_transformation)
 
 ### Datasheets
 - [INA240 Bidirectional, Ultra-Precise Current Sense Amplifier](https://www.ti.com/lit/ds/symlink/ina240.pdf)
 - [Datasheet IR2104(S) & (PbF)](https://www.infineon.com/dgdl/Infineon-IR2104-DS-v01_00-EN.pdf?fileId=5546d462533600a4015355c7c1c31671)
 - [Datasheet STP55NF06L N-channel Power MOSFET](https://www.st.com/content/ccc/resource/technical/document/datasheet/49/c5/a8/71/93/60/4f/86/CD00002690.pdf/files/CD00002690.pdf/jcr:content/translations/en.CD00002690.pdf)
-
-### JLCPCB parts (will probably change)
-- [PA2512FKF7W0R006E - 2W ±100ppm/℃ ±1% 6mΩ 2512 Chip Resistor - Surface Mount ROHS](https://jlcpcb.com/partdetail/YAGEO-PA2512FKF7W0R006E/C728340)
-- [A16-1000 - 16V 10A 40A 17A Plugin Resettable Fuses ROHS](https://jlcpcb.com/partdetail/Shenzhen_JDTFuse-A161000/C135398)
-- [KM477M035F16RR0VH2FP0 - 470uF 35V ±20% Plugin,D8xL16mm Aluminum Electrolytic Capacitors - Leaded ROHS](https://jlcpcb.com/partdetail/48894-KM477M035F16RR0VH2FP0/C47888)
-- [50YXF1MEFC5X11 - 1uF 50V ±20% Plugin,D5xL11mm Aluminum Electrolytic Capacitors - Leaded ROHS](https://jlcpcb.com/partdetail/Rubycon-50YXF1MEFC5X11/C2927584)
-- [CC1H104MC1FD3F6C10SA - ±20% 100nF Y5V 50V Plugin,P=5.08mm Through Hole Ceramic Capacitors ROHS](https://jlcpcb.com/partdetail/Dersonic-CC1H104MC1FD3F6C10SA/C5375966)
-- [S6B-PH-K-S(LF)(SN) - 1x6P 6P PH Tin 6 -25℃~+85℃ 2A 1 2mm Brass Bend insert Push-Pull,P=2mm Wire To Board Connector ROHS](https://jlcpcb.com/partdetail/JST-S6B_PH_K_S_LF_SN/C157920)
-- [XL-3216UGC-FB - 5mA 86mcd~299mcd Reverse Mount 510nm~537nm Emerald 120° 75mW 2.6V~3.2V 1206 LED Indication - Discrete ROHS](https://jlcpcb.com/partdetail/XINGLIGHT-XL_3216UGCFB/C3646937)
-- [XL-3216SURC-FB - 5mA 100mcd~120mcd Reverse Mount 617nm~627nm Red 120° 60mW 1.8V~2.1V 1206 LED Indication - Discrete ROHS](https://jlcpcb.com/partdetail/XINGLIGHT-XL_3216SURCFB/C3646938)
-- [B0530W - 30V 430mV@500mA 500mA SOD-123 Schottky Diodes ROHS](https://jlcpcb.com/partdetail/2459-B0530W/C2102)
-- [MBR1045G - 45V 570mV@10A 10A TO-220-2 Schottky Diodes ROHS](https://jlcpcb.com/partdetail/onsemi-MBR1045G/C79734)
-- [INA240A1DR - Single Channel SOIC-8 Current Sense Amplifiers ROHS](https://jlcpcb.com/partdetail/TexasInstruments-INA240A1DR/C2060769)
