@@ -40,18 +40,19 @@ class MotorSimulation:
     ):    
         bemfs = self.properties.get_phase_backemfs(electrical_angle, electrical_angular_velocity)
         self.electrical.bemf_torques = bemfs.bemf_torques
-        self.electrical.phase_bemfs = bemfs.phase_bemf
+        self.electrical.bemf_voltages = bemfs.phase_bemf
 
         # Calculate current derivative
         
         # Since the sum of phase voltages/currents across the three phases must be zero,
         # we subtract the average to use relative phase-neutral voltages
-        average_phase_voltage = sum(phase_voltages) / 3
-        average_bemf = sum(self.electrical.phase_bemfs) / 3
+        # average_phase_voltage = sum(phase_voltages) / 3
+        # average_bemf = sum(self.electrical.phase_bemfs) / 3
+        neutral_voltage = (sum(phase_voltages) - sum(self.electrical.bemf_voltages)) / 3
         di_dt: list[float] = [0, 0, 0]
         for i in range(3):
-            phase_to_neutral_voltage = phase_voltages[i] - average_phase_voltage
-            back_emf_voltage = self.electrical.phase_bemfs[i] - average_bemf
+            phase_to_neutral_voltage = phase_voltages[i] - neutral_voltage
+            back_emf_voltage = self.electrical.bemf_voltages[i]
             resistive_drop = self.electrical.phase_currents[i] * self.properties.phase_resistance
             effective_voltage = phase_to_neutral_voltage - back_emf_voltage - resistive_drop
             di_dt[i] = effective_voltage / self.properties.phase_inductance
@@ -96,14 +97,22 @@ class MotorSimulation:
 class SimIOInterface:
     motor: MotorSimulation
     debug_led_state: tuple[bool, bool, bool] = (False, False, False)
+    last_phase_voltages: tuple[float, float, float] = (0, 0, 0)
     
     def __init__(self):
         self.motor = MotorSimulation(REV_NEO_PROPS)
     
     def update(self, dt: float, phase_voltages: tuple[float, float, float]):
         """Update the motor simulation with the given phase inputs."""
-        load_torque = 0
+        load_torque = 0 # Nm
+        self.last_phase_voltages = phase_voltages
         self.motor.step(dt, load_torque, phase_voltages)
+    
+    def reset(self):
+        """Reset the motor simulation to its initial state."""
+        self.motor = MotorSimulation(REV_NEO_PROPS)
+        self.debug_led_state = (False, False, False)
+        self.last_phase_voltages = (0, 0, 0)
     
     def get_encoder_position(self) -> float:
         """Get the current encoder position of the motor in radians."""
@@ -112,3 +121,6 @@ class SimIOInterface:
     def set_debug_leds(self, led1: bool, led2: bool, led3: bool):
         # In a real implementation, this would control hardware LEDs.
         self.debug_led_state = (led1, led2, led3)
+    
+    def get_phase_currents(self) -> tuple[float, float, float]:
+        return self.motor.get_simulated_phase_currents()

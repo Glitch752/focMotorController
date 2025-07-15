@@ -1,8 +1,6 @@
 from typing import NamedTuple
 import math
 
-from .util import clamp
-
 class ClarkeOutput(NamedTuple):
     """
     The output of the Clarke transform.

@@ -46,3 +46,12 @@ Time taken: ~1 hour
 Time taken: ~2 hours
 
 I created an initial writeup of my understanding of field oriented control in the readme.
+
+## Vastly improve motor simulation
+Time taken: ~7 hours
+
+The FOC simulaton now sort of, kind of, maybe works!  
+At least, we're able to command the motor to slowly spin and move it a bit. The phase outputs look somewhat sinusoidal as well.  
+The FOC part itself needs more work, but the motor simulation is certainly better now.
+
+![](assets/motor_simulation.png)
