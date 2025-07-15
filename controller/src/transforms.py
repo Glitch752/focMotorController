@@ -1,6 +1,8 @@
 from typing import NamedTuple
 import math
 
+from .util import clamp
+
 class ClarkeOutput(NamedTuple):
     """
     The output of the Clarke transform.
@@ -20,12 +22,26 @@ class ParkOutput(NamedTuple):
     d: float
     # Q-axis component (perpendicular to the rotor's magnetic field, responsible for torque)
     q: float
+    
+    def clamp_to_vbus(self, vbus: float) -> "ParkOutput":
+        """
+        Clamp the magnitude of the D-axis and Q-axis voltages to the bus voltage.
+        """
+        # Multiply vbus by 2/sqrt(3) because we used a normalized clarke matrix
+        reference = 2/math.sqrt(3) * vbus
+        
+        magnitude = math.sqrt(self.d**2 + self.q**2)
+        if magnitude > reference:
+            scale = reference / magnitude
+            return ParkOutput(self.d * scale, self.q * scale)
+        return self
 
 def clarke_transform(iu: float, iv: float, iw: float) -> ClarkeOutput:
     """
     Perform the Clarke transformation on three-phase currents.
     Converts three-phase currents (lu, lv, and lw) into two-phase orthogonal components
-    relative to the stator reference frame (alpha and beta).
+    relative to the stator reference frame (alpha and beta).  
+    This typically operates on amps.
     """
     alpha = iu - iv/2 - iw/2
     beta = math.sqrt(3)/2 * iv - math.sqrt(3)/2 * iw
@@ -35,7 +51,8 @@ def park_transform(alpha_beta: ClarkeOutput, theta: float) -> ParkOutput:
     """
     Perform the Park transformation on two-phase orthogonal components.
     Converts the Clarke output (alpha and beta) into D-axis and Q-axis components
-    relative to the rotor reference frame, given the rotor angle theta.
+    relative to the rotor reference frame, given the rotor angle theta.  
+    This typically operates on amps.
     """
     cos = math.cos(theta)
     sin = math.sin(theta)
@@ -47,7 +64,8 @@ def inverse_park_transform(dq: ParkOutput, theta: float) -> ClarkeOutput:
     """
     Perform the inverse Park transformation on D-axis and Q-axis components.
     Converts the D-axis and Q-axis components back into Clarke output (alpha and beta)
-    relative to the stator reference frame, given the rotor angle theta.
+    relative to the stator reference frame, given the rotor angle theta.  
+    This typically operates on volts.
     """
     cos = math.cos(theta)
     sin = math.sin(theta)
@@ -59,7 +77,8 @@ def inverse_clarke_transform(clarke: ClarkeOutput) -> tuple[float, float, float]
     """
     Perform the inverse Clarke transformation on two-phase orthogonal components.
     Converts the Clarke output (alpha and beta) back into three-phase components
-    (lu, lv, and lw) relative to the stator reference frame.
+    (lu, lv, and lw) relative to the stator reference frame.  
+    This typically operates on volts.
     """
     iu = clarke.alpha + clarke.beta / math.sqrt(3)
     iv = -clarke.alpha / 2 + clarke.beta * math.sqrt(3) / 2

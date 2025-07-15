@@ -76,9 +76,13 @@ Field oriented control is a mechanism to control brushless DC motors that guaran
   - **Inductor**: Another name for a winding, typically used in the context of inductors that store energy in a magnetic field.
   - **Phase**: A set of windings in a motor that is independently controlled. Brushless motors typically have three phases, which are often referred to as A, B, and C or U, V, and W.
   - **Rotor**: The *rot*ating part of the motor containing permanent magnets. This is the part that spins.
+    - **Poles**: The number of permanent magnets attached to the rotor. This isn't necessarily a multiple of the number of phases, but should be a multiple of 2 (since two identical magnet poles can't be beside each other).
   - **Stator**: The *stat*ionary part of the motor containing the windings. This is the part that generates the magnetic field. In a 3-phase motor, the stator has 3 sets of windings, each 120 degrees apart.
+    - **Slots**: The number of coils on the stator. Motors will have a number of slots that is a multiple of the number of phases.
   - **BLDC**: Brushless DC. Brushed motors have physical contacts that dictate when phases are activated, while brushless motors rely on electrical signals to control the phases. Brushless motors can be faster, more reliable, and more efficient, but this comes at the cost of complexity.[<sup>1</sup>](#footnote-1)
   - **PMSM**: Permanent Magnet Synchronous Motors. The uses of this term are somewhat murky and confused with BLDC, so I will refrain from using it to avoid confusion.[<sup>2</sup>](#footnote-2)
+  - **Mechanical angle**: The physical angle of the rotor in the motor; 1 revolution of the rotor is 360 degrees. The mechanical angle is used for position and speed feedback.
+  - **Electrical angle**: The electrical angle describes the position of the rotor relative to the stator's magnetic field. It cycles faster than the mechanical angle by a factor equal to the number of pole pairs. The electrical angle is used for control calculations (e.g. it's the angle used in park and clarke transformations; see below).
 - **FOC**: Field-oriented control, a method of controlling brushless motors that uses current-based feedback to apply torque directly perpendicular to the rotor.
 - **Inverter**: Components that convert DC power to AC power. In our case, the circuitry that converts the motor controller's input voltage to phase voltages.
   - **MOSFET**: Metal-Oxide-Semiconductor Field-Effect Transistor; a particular type of transistor that can effectively act as a switch when appropriate signals are applied. 6 MOSFETs are used for BLDC motor control: one for ground and one for voltage of each phase.
@@ -186,6 +190,8 @@ Note that I initially had some issues with kicad-wakatime, so it didn't track ~8
 - [Demystifying BLDC motor commutation - Texas Instruments](https://www.ti.com/lit/ml/slyp711/slyp711.pdf)
 - [Alpha–beta transformation - Wikipedia](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_transformation)
 - [Direct-quadrature-zero transformation - Wikipedia](https://en.wikipedia.org/wiki/Direct-quadrature-zero_transformation)
+- [Field Oriented Control (FOC) - A Deep Dive - Performance Motion Devices](https://www.pmdcorp.com/resources/type/articles/get/field-oriented-control-foc-a-deep-dive-article)
+- [fasaxc/pico-bldc - Github](https://github.com/fasaxc/pico-bldc/tree/main)
 
 ### Datasheets
 - [INA240 Bidirectional, Ultra-Precise Current Sense Amplifier](https://www.ti.com/lit/ds/symlink/ina240.pdf)

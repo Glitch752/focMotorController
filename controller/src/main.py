@@ -37,21 +37,24 @@ class FOCController:
     id_controller: "FOCController.IDController"
     iq_controller: "FOCController.IDController"
     
+    target_id: float # Target d-axis current
     target_iq: float # Target q-axis current (torque command)
     
-    last_output_u: float
-    last_output_v: float
-    last_output_w: float
+    last_phase_voltages: tuple[float, float, float]
+    
+    current_dq: tuple[float, float]
+    output_dq: tuple[float, float]
     
     def __init__(self, io: SimIOInterface):
         self.io = io
         self.angle = 0.0
         self.vel = 0.0
         
-        self.id_controller = self.IDController(kp=1e-5, ki=0.0)
-        self.iq_controller = self.IDController(kp=1e-5, ki=0.0)
+        self.id_controller = self.IDController(kp=10, ki=0.0)
+        self.iq_controller = self.IDController(kp=10, ki=0.0)
         
-        self.target_iq = 1
+        self.target_id = 0
+        self.target_iq = 10
         
     def step(self, dt):
         # Measure position and estimate velocity
@@ -64,34 +67,26 @@ class FOCController:
         i_a, i_b, i_c = self.io.motor.get_simulated_phase_currents()
         clarke = transforms.clarke_transform(i_a, i_b, i_c)
         (i_d, i_q) = transforms.park_transform(clarke, theta)
+        self.current_dq = (i_d, i_q)
         
-        # d-axis current target (0 for FOC control)
-        i_d_target = 0.0
-        # q-axis current target (our torque command)
-        i_q_target = self.target_iq
+        u_id = self.id_controller.compute(self.target_id - i_d, dt)
+        u_iq = self.iq_controller.compute(self.target_iq - i_q, dt)
+        self.output_dq = (u_id, u_iq)
         
-        u_id = self.id_controller.compute(i_d - i_d_target, dt)
-        u_iq = self.iq_controller.compute(i_q - i_q_target, dt)
+        dq_voltages = transforms.ParkOutput(u_id, u_iq).clamp_to_vbus(self.io.motor.properties.vbus)
+        park_voltages = transforms.inverse_park_transform(dq_voltages, theta)
+        phase_voltages = transforms.inverse_clarke_transform(park_voltages)
         
-        park = transforms.inverse_park_transform(transforms.ParkOutput(u_id, u_iq), theta)
-        (phase_u, phase_v, phase_w) = transforms.inverse_clarke_transform(park)
-        
-        phase_u = min(1, max(-1, phase_u))
-        phase_v = min(1, max(-1, phase_v))
-        phase_w = min(1, max(-1, phase_w))
-        
-        self.last_output_u = phase_u
-        self.last_output_v = phase_v
-        self.last_output_w = phase_w
+        self.last_phase_voltages = phase_voltages
 
-        self.io.update(dt, phase_u, phase_v, phase_w)
+        self.io.update(dt, phase_voltages)
 
 def main():
     print("--- FOC motor controller simulation ---")
     
     io = SimIOInterface()
     ctrl = FOCController(io)
-    dt = 0.0001 # 1 ms timestep
+    dt = 0.00001 # 0.1 ms timestep
     import dearpygui.dearpygui as dpg
 
     dpg.create_context()
@@ -99,66 +94,122 @@ def main():
     dpg.setup_dearpygui()
 
     SHOW_LATEST_GRAPH = True
+    
+    GRAPH_ANGLE = False
+    GRAPH_PHASE_VOLTAGES = True
+    GRAPH_CURRENT_DQ = False
+    GRAPH_OUTPUT_DQ = False
+    
+    paused = False
 
     max_values = 500
+    sample_separation = 100
     times = []
+    
     angles = []
-    phase_a_voltages = []
-    phase_b_voltages = []
-    phase_c_voltages = []
+    
+    phase_u_voltages = []
+    phase_v_voltages = []
+    phase_w_voltages = []
+    
+    curr_d_currents = []
+    curr_q_currents = []
+    
+    out_d_voltages = []
+    out_q_voltages = []
     
     with dpg.window(label="Motor Controller"):
         angle_plot = dpg.add_plot(label="Rotor Angle", height=400, width=1000)
         x_axis = dpg.add_plot_axis(dpg.mvXAxis, label="Time (s)", parent=angle_plot)
         y_axis = dpg.add_plot_axis(dpg.mvYAxis, label="Angle (rad)", parent=angle_plot)
         
-        angle_series = dpg.add_line_series([], [], label="Angle", parent=y_axis)
-        # dpg.set_axis_limits(y_axis, 0, 2 * math.pi)
+        if SHOW_LATEST_GRAPH:
+            dpg.set_axis_limits(x_axis, 0, max_values * dt * sample_separation)
         
-        # if SHOW_LATEST_GRAPH:
-        #     dpg.set_axis_limits(x_axis, 0, max_values * dt)
+        if GRAPH_ANGLE:
+            angle_series = dpg.add_line_series([], [], label="Angle", parent=y_axis)
+            # dpg.set_axis_limits(y_axis, 0, 2 * math.pi)
+        if GRAPH_PHASE_VOLTAGES:
+            phase_u_series = dpg.add_line_series([], [], label="Phase A Voltage", parent=y_axis)
+            phase_v_series = dpg.add_line_series([], [], label="Phase B Voltage", parent=y_axis)
+            phase_w_series = dpg.add_line_series([], [], label="Phase C Voltage", parent=y_axis)
+        if GRAPH_CURRENT_DQ:
+            curr_d_series = dpg.add_line_series([], [], label="D-axis Current", parent=y_axis)
+            curr_q_series = dpg.add_line_series([], [], label="Q-axis Current", parent=y_axis)
+        if GRAPH_OUTPUT_DQ:
+            d_series = dpg.add_line_series([], [], label="D-axis Voltage Output", parent=y_axis)
+            q_series = dpg.add_line_series([], [], label="Q-axis Voltage Output", parent=y_axis)
         
-        phase_a_series = dpg.add_line_series([], [], label="Phase A Voltage", parent=y_axis)
-        phase_b_series = dpg.add_line_series([], [], label="Phase B Voltage", parent=y_axis)
-        phase_c_series = dpg.add_line_series([], [], label="Phase C Voltage", parent=y_axis)
+        info_text = dpg.add_text(default_value="")
         
-        vel_text = dpg.add_text(default_value="Velocity: 0.00 rad/s")
+        # Add pause/play button
+        def toggle_pause():
+            nonlocal paused
+            paused = not paused
+            dpg.set_value(pause_button, "Resume" if paused else "Pause")
+        pause_button = dpg.add_button(label="Pause", callback=toggle_pause)
 
     elapsed = 0
-    def update_gui():
+    def update_gui(delta: float):
         nonlocal elapsed
         
-        for i in range(100):
+        updates_per_frame = 1000
+        for i in range(updates_per_frame):
             ctrl.step(dt)
             
             elapsed += dt
             
-            if i % 10 == 0:
+            if i % sample_separation == 0:
                 if SHOW_LATEST_GRAPH:
                     if len(times) < max_values:
-                        times.append(len(times) * dt)
+                        times.append(elapsed)
                 else:
                     times.append(elapsed)
             
-                angles.append(io.get_encoder_position())
-                phase_a_voltages.append(ctrl.last_output_u)
-                phase_b_voltages.append(ctrl.last_output_v)
-                phase_c_voltages.append(ctrl.last_output_w)
+                if GRAPH_ANGLE:
+                    angles.append(io.get_encoder_position())
+                if GRAPH_PHASE_VOLTAGES:
+                    phase_u_voltages.append(ctrl.last_phase_voltages[0])
+                    phase_v_voltages.append(ctrl.last_phase_voltages[1])
+                    phase_w_voltages.append(ctrl.last_phase_voltages[2])
+                if GRAPH_CURRENT_DQ:
+                    curr_d_currents.append(ctrl.current_dq[0])
+                    curr_q_currents.append(ctrl.current_dq[1])
+                if GRAPH_OUTPUT_DQ:
+                    out_d_voltages.append(ctrl.output_dq[0])
+                    out_q_voltages.append(ctrl.output_dq[1])
                 
                 if len(times) > max_values:
                     times.pop(0)
-                if len(angles) > max_values:
+                if GRAPH_ANGLE and len(angles) > max_values:
                     angles.pop(0)
-                    phase_a_voltages.pop(0)
-                    phase_b_voltages.pop(0)
-                    phase_c_voltages.pop(0)
+                if GRAPH_PHASE_VOLTAGES and len(phase_u_voltages) > max_values:
+                    phase_u_voltages.pop(0)
+                    phase_v_voltages.pop(0)
+                    phase_w_voltages.pop(0)
+                if GRAPH_CURRENT_DQ and len(curr_d_currents) > max_values:
+                    curr_d_currents.pop(0)
+                    curr_q_currents.pop(0)
+                if GRAPH_OUTPUT_DQ and len(out_d_voltages) > max_values:
+                    out_d_voltages.pop(0)
+                    out_q_voltages.pop(0)
         
-        dpg.set_value(angle_series, [times, angles])
-        dpg.set_value(phase_a_series, [times, phase_a_voltages])
-        dpg.set_value(phase_b_series, [times, phase_b_voltages])
-        dpg.set_value(phase_c_series, [times, phase_c_voltages])
+        if GRAPH_ANGLE:
+            dpg.set_value(angle_series, [times, angles])
+        if GRAPH_PHASE_VOLTAGES:
+            dpg.set_value(phase_u_series, [times, phase_u_voltages])
+            dpg.set_value(phase_v_series, [times, phase_v_voltages])
+            dpg.set_value(phase_w_series, [times, phase_w_voltages])
+        if GRAPH_CURRENT_DQ:
+            dpg.set_value(curr_d_series, [times, curr_d_currents])
+            dpg.set_value(curr_q_series, [times, curr_q_currents])
+        if GRAPH_OUTPUT_DQ:
+            dpg.set_value(d_series, [times, out_d_voltages])
+            dpg.set_value(q_series, [times, out_q_voltages])
         
-        dpg.set_value(vel_text, f"Velocity: {ctrl.vel:.2f} rad/s")
+        dpg.set_value(info_text, f"Velocity: {ctrl.vel:.2f} rad/s\n\
+Angle: {ctrl.angle:.4f}\n\
+Current update rate: {updates_per_frame / delta:.2f} Hz")
     
     dpg.show_viewport()
 
@@ -167,7 +218,8 @@ def main():
         delta = time.time() - last_time
         last_time += delta
         
-        update_gui()
+        if not paused:
+            update_gui(delta)
         
         dpg.render_dearpygui_frame()
 
