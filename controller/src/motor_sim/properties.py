@@ -136,12 +136,14 @@ class MotorProperties:
 
 REV_NEO_PROPS = MotorProperties(
     pole_pairs=7,
-    # TODO: measure inertia, phase inductance and resistance, and backemf
+    
     # Empirical Kv = 473 RPM/V; Ke = 1/Kv * 60/(2*pi)
     bemf_constant = 1/473 * 60 / (2*math.pi),
     # Rough approximations taken from https://www.chiefdelphi.com/t/brushless-motor-controller-tester/392593/23
     # Phase inductance is ~10 mH
     phase_inductance = 0.01,
     # Phase resistance is ~30 mOhm
-    phase_resistance = 0.03
+    phase_resistance = 0.03,
+    
+    normed_bemf_coeffs=(1.15, 0.2, 0.05, 0.02, 0.01) # Based on measured waveform
 )

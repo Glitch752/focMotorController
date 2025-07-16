@@ -74,6 +74,7 @@ class MotorSimulation:
         electromagnetic_torque: float = sum(
             current * bemf for current, bemf in zip(self.electrical.phase_currents, self.electrical.bemf_torques)
         )
+        self.kinematic.electromagnetic_torque = electromagnetic_torque
         self.kinematic.torque = electromagnetic_torque + cogging_torque + friction_torque + load_torque
         
         # The equivalent of F=m*a for rotational tynamics is tau = I*a.

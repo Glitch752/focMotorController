@@ -27,3 +27,6 @@ fp-info-cache
 *.ses
 
 \#auto_saved_files\#
+
+# ipynb venv
+.venv

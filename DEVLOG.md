@@ -55,3 +55,11 @@ At least, we're able to command the motor to slowly spin and move it a bit. The 
 The FOC part itself needs more work, but the motor simulation is certainly better now.
 
 ![](assets/motor_simulation.png)
+
+## Improve FOC control and simulator GUI
+Time taken: ~5 hours
+
+The simulator is a lot more usable now, and I also implemented a six-step controller as point of comparison for FOC.  
+I think the FOC control could still use some work, but it is now stable and works relatively well.  
+
+![](assets/simulator.png)

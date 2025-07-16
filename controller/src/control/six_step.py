@@ -24,10 +24,10 @@ class SixStepController(MotorController):
         electrical_angle = self.io.motor.properties.mechanical_to_electrical_angle(theta)
         progress: float = electrical_angle % (2 * math.pi) / (2 * math.pi)
 
-        phase_advance = -0.1 # Proportion of a cycle (0 to 1)
+        phase_advance = 0.9 # Proportion of a cycle (0 to 1)
 
         return (
             self.get_commutation_state(progress + phase_advance) * 12,
-            self.get_commutation_state(progress + phase_advance - 1.0 / 3) * 12,
-            self.get_commutation_state(progress + phase_advance - 2.0 / 3) * 12
+            self.get_commutation_state(progress + phase_advance - 1/3) * 12,
+            self.get_commutation_state(progress + phase_advance - 2/3) * 12
         )

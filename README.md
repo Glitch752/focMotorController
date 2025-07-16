@@ -86,7 +86,8 @@ Field oriented control is a mechanism to control brushless DC motors that guaran
 - **FOC**: Field-oriented control, a method of controlling brushless motors that uses current-based feedback to apply torque directly perpendicular to the rotor.
 - **Inverter**: Components that convert DC power to AC power. In our case, the circuitry that converts the motor controller's input voltage to phase voltages.
   - **MOSFET**: Metal-Oxide-Semiconductor Field-Effect Transistor; a particular type of transistor that can effectively act as a switch when appropriate signals are applied. 6 MOSFETs are used for BLDC motor control: one for ground and one for voltage of each phase.
-  - **Gate driver / FET driver**: A circuit that controls MOSFETs, providing the necessary voltage while decoupling the microcontroller from the relatively high current draw of switching MOSFETs. 
+  - **Gate driver / FET driver**: A circuit that controls MOSFETs, providing the necessary voltage while decoupling the microcontroller from the relatively high current draw of switching MOSFETs.
+  - **Half bridge**: A circuit that controls two MOSFETs to switch a phase between voltage and ground. Half bridges are used for each phase in BLDC motor control.
 - **Encoder**: A device that measures the position of the rotor relative to the stator. Accurate position measurement is crucial for FOC so we know where to apply torque.
   - **Hall effect sensor**: A type of sensor that detects magnetic fields.
   - **Quadrature encoder**: A type of encoder that uses two signals to determine the position of the rotor. It can detect both position and direction of rotation. Quadrature encoders can use hall sensors, optical sensors, or other methods.
@@ -173,6 +174,13 @@ Note that I initially had some issues with kicad-wakatime, so it didn't track ~8
 - Do we need a heatsink? We should be dissipating an average of ~0.32W per MOSFET at peak load, and 2 watts spread over 6 devices is a very minimal amount of heat. Maybe if we drive it harder, but the rest of the circuit would probably break before the MOSFETs...
 - There's an interesting new-ish algorithm seen primarily in acadamia called [Deadbeat Direct Torque and Flux Control](https://www.mdpi.com/1996-1073/15/9/3009); how difficult would it be to implement this?
 - Understand and determine the advantages of [discontinuous PWM](https://imperix.com/doc/implementation/discontinuous-pwm) signaling
+
+### Future investigation for the PCB
+- Should we have separate enable lines per half bridge?
+- Is there a more efficient and accurate, yet inexpensive, way to measure current?
+- How can I minimize signal noise in a board carrying high current?
+- How can I improve the gate driver circuitry to minimize switching losses?
+- Should we instead use full half bridge chips instead of drivers and MOSFETs?
 
 ## Resources
 - [Current Sensing Techniques in Motor Control Applications - NXP](https://www.nxp.com/docs/en/application-note/AN14164.pdf)
