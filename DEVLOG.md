@@ -63,3 +63,8 @@ The simulator is a lot more usable now, and I also implemented a six-step contro
 I think the FOC control could still use some work, but it is now stable and works relatively well.  
 
 ![](assets/simulator.png)
+
+## Small PCB fixes and updates
+Time taken: ~2 hours
+
+I adjusted the PCB to use copper pours for high current traces and opened areas on the mask for solder if needed. 
