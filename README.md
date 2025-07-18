@@ -66,7 +66,7 @@ Total part cost for 1 board:
 Note that, if you're doing assembly through something like JLCPCB, you'll need to make 5. If you don't need 5 boards, you can avoid assembly for the MOSFETs and order them yourself. They're one of the easiest components to solder on the board.
 
 ## FOC writeup
-Here, I'll document my current knowledge of field oriented control for my own reference and to see what I need to look further into. Please note all this information may not be correct since BLDC controll is still a new subject to me.
+Here, I'll document my current knowledge of field oriented control for my own reference and to see what I need to look further into. Please note all this information may not be correct since BLDC control is still a new subject to me.
 
 Field oriented control is a mechanism to control brushless DC motors that guarantees torque will always be applied directly perpendicular to the motor. It increases the efficiency, maximum speed, and power output of controlled motors. However, it's also relatively expensive to calculate and suffers from MOSFET switching losses because we must use PWM control to generate an effective sine wave.
 
@@ -77,7 +77,7 @@ Field oriented control is a mechanism to control brushless DC motors that guaran
   - **Phase**: A set of windings in a motor that is independently controlled. Brushless motors typically have three phases, which are often referred to as A, B, and C or U, V, and W.
   - **Rotor**: The *rot*ating part of the motor containing permanent magnets. This is the part that spins.
     - **Poles**: The number of permanent magnets attached to the rotor. This isn't necessarily a multiple of the number of phases, but should be a multiple of 2 (since two identical magnet poles can't be beside each other).
-  - **Stator**: The *stat*ionary part of the motor containing the windings. This is the part that generates the magnetic field. In a 3-phase motor, the stator has 3 sets of windings, each 120 degrees apart.
+  - **Stator**: The *stat*ionary part of the motor containing the windings. This is the part that generates the magnetic field. In a 3-phase motor, the stator has 3 sets of windings, each 120 electric degrees apart.
     - **Slots**: The number of coils on the stator. Motors will have a number of slots that is a multiple of the number of phases.
   - **BLDC**: Brushless DC. Brushed motors have physical contacts that dictate when phases are activated, while brushless motors rely on electrical signals to control the phases. Brushless motors can be faster, more reliable, and more efficient, but this comes at the cost of complexity.[<sup>1</sup>](#footnote-1)
   - **PMSM**: Permanent Magnet Synchronous Motors. The uses of this term are somewhat murky and confused with BLDC, so I will refrain from using it to avoid confusion.[<sup>2</sup>](#footnote-2)
@@ -96,6 +96,8 @@ Field oriented control is a mechanism to control brushless DC motors that guaran
 - **PWM**: Pulse-width modulation. A method of controlling the amount of power delivered by quicking switching something on and off.
   - **Duty cycle**: The percentage of time that a signal is on compared to the total time. For example, a 25% duty cycle means the signal is on for 25% of the time and off for 75% of the time.
   - **SVM**: Space vector modulation. An algorithm for effectively creating AC waveforms through PWM signals. SVM is commonly used for BLDC motor control because it reduces noise and vibration compared to more naive approaches.
+- **Driving frequency**: Generally, the frequency of PWM pulses sent to the half bridge drivers. A higher driving frequency creates a smoother output signal but requires faster and more expensive hardware. Generally in the range of 20 to 80 kHz.
+- **Control frequency**: The frequency of the control system driving the output voltages. Control systems generally operate around 1 to 5 kHz.
 - **Inrunner/outrunner**: Two types of brushless motors that differ in how the stator and rotor are arranged.
   - **Inrunner**: The rotor is inside the stator, which typically contains large windings pointing inward. Inrunner motors generally have a higher maximum speed and efficiency.
   - **Outrunner**: The rotor is outside the stator, which typically contains smaller windings pointing outward. In some cases, this means the rotor is the outer body of the motor. In outrunner motors, the rotor is sometimes also called a can. Outrunner motors generally have a higher torque output.
@@ -153,9 +155,7 @@ PI controllers are a subset of the more general PID controllers, which also incl
 
 ### Figures
 #### Figure 1: A diagram of coordinate systems used in FOC
-<img src="assets/coordinate_systems.png" width="300"></img>
-Taken from [this great presentation](https://www.ti.com/lit/ml/slyp711/slyp711.pdf).  
-TODO: Make a cleaner image that isn't just a screenshot lol  
+![A graphical explanation of stator, rotor, and winding motor coordinate systems](assets/coordinate-systems-dark.png)
 
 ## Software
 Currently, there's a testing piece of software written in Python to run on a local system and simulate the motor controller.

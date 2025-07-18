@@ -107,7 +107,7 @@ def main():
             callback=change_history_length
         )
 
-    with dpg.window(label="Graphs", pos=(600, 0), height=1500):
+    with dpg.window(label="Graphs", pos=(600, 0), height=1400, width=1200):
         dpg.bind_font(default_font)
 
         with dpg.group(horizontal=False):
