@@ -7,7 +7,7 @@ I wanted to learn how field-oriented control systems (and brushless motor contro
 <img src="assets/board_rtx.png" width="1000px"></img>
 
 ## Design goals
-- Allow 10-amp continuous operation
+- Allow 30-amp continuous operation
 - Run field-oriented control
 - Runs off an RP2040 Arduino devboard
 - Operate at relatively high efficiency: I don't have a specific goal in mind, but ideally it would experience less than a few watts loss at peak load

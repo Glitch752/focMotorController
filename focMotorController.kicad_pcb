@@ -22065,7 +22065,7 @@
 		(uuid "3321f85d-ad4f-4a6c-b338-f27c1b90c25e")
 	)
 	(gr_line
-		(start 110.675269 69.740012)
+		(start 110.647088 69)
 		(end 110.614657 56.5)
 		(stroke
 			(width 2.54)
@@ -22095,6 +22095,16 @@
 		(uuid "532c8454-b9e7-47c1-8830-e33f42a43669")
 	)
 	(gr_line
+		(start 136.530234 69)
+		(end 136.490928 56.716756)
+		(stroke
+			(width 2.54)
+			(type solid)
+		)
+		(layer "F.Mask")
+		(uuid "5e140b25-ba0e-470f-9dc7-98cf9c146b0e")
+	)
+	(gr_line
 		(start 140.96148 65.509335)
 		(end 139.748732 65.509335)
 		(stroke
@@ -22115,8 +22125,8 @@
 		(uuid "787e79ab-6984-44d8-af60-ea39f574f3ce")
 	)
 	(gr_line
-		(start 123.368138 69.80033)
-		(end 123.307526 56.560318)
+		(start 123.520403 69)
+		(end 123.479409 56.628242)
 		(stroke
 			(width 2.54)
 			(type solid)
