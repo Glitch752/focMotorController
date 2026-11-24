@@ -13395,8 +13395,7 @@
 	)
 	(symbol
 		(lib_id "Diode:SMAJ15A")
-		(at 44.45 54.61 0)
-		(mirror x)
+		(at 44.45 54.61 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -13404,7 +13403,7 @@
 		(dnp no)
 		(uuid "d7dcb0f0-4602-41db-9359-24061f42695b")
 		(property "Reference" "D1"
-			(at 55.88 52.324 0)
+			(at 55.626 53.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13412,7 +13411,7 @@
 			)
 		)
 		(property "Value" "SMAJ15A - TVS diode for voltage spike protection"
-			(at 78.994 54.61 0)
+			(at 78.994 55.626 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13429,7 +13428,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.littelfuse.com/media?resourcetype=datasheets&itemid=75e32973-b177-4ee3-a0ff-cedaf1abdb93&filename=smaj-datasheet"
-			(at 43.18 54.61 0)
+			(at 45.72 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)

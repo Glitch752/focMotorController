@@ -3677,7 +3677,7 @@
 	(footprint "Diode_SMD:D_SMA"
 		(layer "F.Cu")
 		(uuid "1765ea7f-1995-4610-9dc1-c94263064f1f")
-		(at 101 53 -90)
+		(at 101 53 90)
 		(descr "Diode SMA (DO-214AC)")
 		(tags "Diode SMA (DO-214AC)")
 		(property "Reference" "D1"
@@ -3704,7 +3704,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.littelfuse.com/media?resourcetype=datasheets&itemid=75e32973-b177-4ee3-a0ff-cedaf1abdb93&filename=smaj-datasheet"
-			(at 0 0 270)
+			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
@@ -3717,7 +3717,7 @@
 			)
 		)
 		(property "Description" "400W unidirectional Transient Voltage Suppressor, 15.0Vr, SMA(DO-214AC)"
-			(at 0 0 270)
+			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
@@ -3747,14 +3747,14 @@
 		(sheetfile "focMotorController.kicad_sch")
 		(attr smd)
 		(fp_line
-			(start -3.51 1.65)
-			(end 2 1.65)
+			(start -3.51 -1.65)
+			(end 2 -1.65)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "71c1dee4-7449-45f6-87a9-acb862c10d14")
+			(uuid "670abd3d-10eb-4581-8497-1dcd3304a9a3")
 		)
 		(fp_line
 			(start -3.51 -1.65)
@@ -3767,44 +3767,14 @@
 			(uuid "c288c5d8-8225-4a35-bd6f-f2318c1d498e")
 		)
 		(fp_line
-			(start -3.51 -1.65)
-			(end 2 -1.65)
+			(start -3.51 1.65)
+			(end 2 1.65)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "670abd3d-10eb-4581-8497-1dcd3304a9a3")
-		)
-		(fp_line
-			(start -3.5 1.75)
-			(end -3.5 -1.75)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "f72821bb-c25c-4cad-bc27-18c67e330116")
-		)
-		(fp_line
-			(start 3.5 1.75)
-			(end -3.5 1.75)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "18cba266-f576-408f-84d5-0db999601999")
-		)
-		(fp_line
-			(start -3.5 -1.75)
-			(end 3.5 -1.75)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(layer "F.CrtYd")
-			(uuid "6d3b9ba5-dccd-45e4-b206-1559c4fd9963")
+			(uuid "71c1dee4-7449-45f6-87a9-acb862c10d14")
 		)
 		(fp_line
 			(start 3.5 -1.75)
@@ -3817,44 +3787,84 @@
 			(uuid "76b9db38-5321-4b9e-8f3f-9120aaad40f2")
 		)
 		(fp_line
-			(start -2.3 1.5)
+			(start -3.5 -1.75)
+			(end 3.5 -1.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "6d3b9ba5-dccd-45e4-b206-1559c4fd9963")
+		)
+		(fp_line
+			(start 3.5 1.75)
+			(end -3.5 1.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "18cba266-f576-408f-84d5-0db999601999")
+		)
+		(fp_line
+			(start -3.5 1.75)
+			(end -3.5 -1.75)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(layer "F.CrtYd")
+			(uuid "f72821bb-c25c-4cad-bc27-18c67e330116")
+		)
+		(fp_line
+			(start 2.3 -1.5)
 			(end -2.3 -1.5)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "931f75db-9307-4712-9a08-d030cab63ac5")
+			(uuid "2f1bfc8e-f578-4f3e-a846-0947dd6f1445")
 		)
 		(fp_line
-			(start 2.3 1.5)
-			(end -2.3 1.5)
+			(start 2.3 -1.5)
+			(end 2.3 1.5)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "33f528ca-d387-453a-a019-23a7f4b43ff5")
+			(uuid "47cf29fc-d207-4f1d-af42-e2c7ee441905")
 		)
 		(fp_line
-			(start 0.50118 0.75032)
+			(start -0.64944 -0.79908)
+			(end -0.64944 0.80112)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "0c5c69ca-80dd-4fe8-8089-c3ddc006261a")
+		)
+		(fp_line
+			(start 0.50118 0.00102)
+			(end 1.4994 0.00102)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "2c64ffa3-6c38-4c0a-b254-fcb668a79705")
+		)
+		(fp_line
+			(start -0.64944 0.00102)
 			(end 0.50118 -0.79908)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "a636eb41-29d2-414f-a14f-f0f15cf10d08")
-		)
-		(fp_line
-			(start -0.64944 0.00102)
-			(end 0.50118 0.75032)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "78e19068-02c7-43ca-aa24-982adc45e2be")
+			(uuid "05170399-88af-477c-8197-9e44aaa4cebd")
 		)
 		(fp_line
 			(start -0.64944 0.00102)
@@ -3868,53 +3878,43 @@
 		)
 		(fp_line
 			(start -0.64944 0.00102)
+			(end 0.50118 0.75032)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "78e19068-02c7-43ca-aa24-982adc45e2be")
+		)
+		(fp_line
+			(start 0.50118 0.75032)
 			(end 0.50118 -0.79908)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "05170399-88af-477c-8197-9e44aaa4cebd")
+			(uuid "a636eb41-29d2-414f-a14f-f0f15cf10d08")
 		)
 		(fp_line
-			(start 0.50118 0.00102)
-			(end 1.4994 0.00102)
+			(start 2.3 1.5)
+			(end -2.3 1.5)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "2c64ffa3-6c38-4c0a-b254-fcb668a79705")
+			(uuid "33f528ca-d387-453a-a019-23a7f4b43ff5")
 		)
 		(fp_line
-			(start -0.64944 -0.79908)
-			(end -0.64944 0.80112)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "0c5c69ca-80dd-4fe8-8089-c3ddc006261a")
-		)
-		(fp_line
-			(start 2.3 -1.5)
-			(end 2.3 1.5)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(layer "F.Fab")
-			(uuid "47cf29fc-d207-4f1d-af42-e2c7ee441905")
-		)
-		(fp_line
-			(start 2.3 -1.5)
+			(start -2.3 1.5)
 			(end -2.3 -1.5)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "2f1bfc8e-f578-4f3e-a846-0947dd6f1445")
+			(uuid "931f75db-9307-4712-9a08-d030cab63ac5")
 		)
 		(fp_text user "${REFERENCE}"
 			(at 0 -2.5 90)
@@ -3928,21 +3928,21 @@
 			)
 		)
 		(pad "1" smd roundrect
-			(at -2 0 270)
+			(at -2 0 90)
 			(size 2.5 1.8)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.1388888889)
-			(net 1 "GND")
+			(net 15 "PVIN")
 			(pinfunction "A1")
 			(pintype "passive")
 			(uuid "f0c159d3-6f35-4dcf-8455-7e122a0740e9")
 		)
 		(pad "2" smd roundrect
-			(at 2 0 270)
+			(at 2 0 90)
 			(size 2.5 1.8)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.1388888889)
-			(net 15 "PVIN")
+			(net 1 "GND")
 			(pinfunction "A2")
 			(pintype "passive")
 			(uuid "e59285d5-58e2-44d2-8ded-69786eb8b54d")
