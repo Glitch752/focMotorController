@@ -4451,16 +4451,6 @@
 	)
 	(wire
 		(pts
-			(xy 153.67 97.79) (xy 157.48 97.79)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "15598e72-d2bf-42e2-860e-981ebe8e5796")
-	)
-	(wire
-		(pts
 			(xy 105.41 161.29) (xy 109.22 161.29)
 		)
 		(stroke
@@ -5121,6 +5111,16 @@
 	)
 	(wire
 		(pts
+			(xy 157.48 104.14) (xy 157.48 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6ab87eb4-d5d5-4589-9057-7bc43d9a6871")
+	)
+	(wire
+		(pts
 			(xy 52.07 50.8) (xy 52.07 54.61)
 		)
 		(stroke
@@ -5138,16 +5138,6 @@
 			(type default)
 		)
 		(uuid "6f4e13dc-8e95-4273-9804-07f0da7a2b83")
-	)
-	(wire
-		(pts
-			(xy 157.48 104.14) (xy 157.48 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "71e04569-2f18-49fd-9891-f5f2a866bec9")
 	)
 	(wire
 		(pts
@@ -5841,7 +5831,7 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 97.79) (xy 148.59 97.79)
+			(xy 138.43 97.79) (xy 157.48 97.79)
 		)
 		(stroke
 			(width 0)
@@ -5868,6 +5858,16 @@
 			(type default)
 		)
 		(uuid "ce4ed967-b057-44d8-950d-2a359421ec24")
+	)
+	(wire
+		(pts
+			(xy 157.48 106.68) (xy 160.02 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ced49a15-aad1-42f9-9621-df949aad88e3")
 	)
 	(wire
 		(pts
@@ -7783,6 +7783,28 @@
 			)
 		)
 	)
+	(global_label "3.3VDD"
+		(shape input)
+		(at 160.02 106.68 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "fb328113-0603-4f22-aba2-6534ecc20be5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 169.6576 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "Status3"
 		(shape input)
 		(at 128.27 52.07 180)
@@ -9063,73 +9085,6 @@
 			(project ""
 				(path "/c7966ec0-f387-4e97-807f-5748b70266ae"
 					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R_Small")
-		(at 151.13 97.79 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "15f9c382-5fe5-4b17-9dac-bbf0b1653115")
-		(property "Reference" "R1"
-			(at 150.876 100.33 90)
-			(effects
-				(font
-					(size 1.016 1.016)
-				)
-			)
-		)
-		(property "Value" "3.3k"
-			(at 151.384 102.87 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_1206_3216Metric"
-			(at 151.13 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 151.13 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor, small symbol"
-			(at 151.13 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "1369989d-67ef-4b05-bce3-28d9ff949cf4")
-		)
-		(pin "1"
-			(uuid "c858da16-c20b-4ef6-a3f8-9f614e63cfbd")
-		)
-		(instances
-			(project ""
-				(path "/c7966ec0-f387-4e97-807f-5748b70266ae"
-					(reference "R1")
 					(unit 1)
 				)
 			)
@@ -12645,72 +12600,6 @@
 			(project "focMotorController"
 				(path "/c7966ec0-f387-4e97-807f-5748b70266ae"
 					(reference "D7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 157.48 105.41 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "ae311bd3-ec18-4fcd-b88c-868f1614f281")
-		(property "Reference" "#PWR05"
-			(at 157.48 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 161.798 107.696 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 157.48 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 157.48 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 157.48 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "632ee6f7-a87d-458b-a9bb-42483fd24be7")
-		)
-		(instances
-			(project "focMotorController"
-				(path "/c7966ec0-f387-4e97-807f-5748b70266ae"
-					(reference "#PWR05")
 					(unit 1)
 				)
 			)
